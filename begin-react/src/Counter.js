@@ -8,10 +8,13 @@ function Counter() {
     // const setNumber = numberState[1];
 
     const onIncrease = () => {
-        setNumber(number + 1);
+        // setNumber(number + 1);
+        setNumber(prevNumber => prevNumber + 1);
+        // 함수형 업데이트 - 성능 최적화
       }
       const onDecrease = () => {
-        setNumber(number - 1);
+        // setNumber(number - 1);
+        setNumber(prevNumber => prevNumber + 1);
       }
   return (
     <div>
