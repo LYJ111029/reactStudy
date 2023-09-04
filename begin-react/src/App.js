@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 import UserList from './UserList';
 import CreateUser from './CreateUser';
 
@@ -12,13 +12,16 @@ function App() {
         email: ''
     });
     const { username, email } = inputs;
-    const onChange = e => {
+
+    // useCallback 함수로 인해 inputs가 바뀔때만 함수 호출되고 그렇지 않을땐 기존에 것을 다시 재사용
+    const onChange = useCallback((e) => {
         const { name, value } = e.target;
         setInputs({
           ...inputs,
           [name]: value
         });
-    };
+    }, [inputs]);
+
     const [users, setUsers] = useState([
         {
             id: 1,
@@ -39,9 +42,11 @@ function App() {
             active: false,
         }
     ]);
+    
     //useRef를 사용한 것은 값이 변하더라도 리렌더링 되지 않는다.
     const nextId = useRef(4);
-    const onCreate = () => {
+    
+    const onCreate = useCallback(() => {
         const user = {
             id: nextId.current,
             username,
@@ -56,7 +61,7 @@ function App() {
             email: '',
         });
         nextId.current += 1;
-    };
+    }, [username, email, users]);
 
     const onRemove = id => {
         setUsers(users.filter(user => user.id !== id));
@@ -69,7 +74,7 @@ function App() {
                 : user
         ))
     }
-    
+
     // useMemo를 사용하면 필요할때만 함수를 호출 할 수 있다.
     const count = useMemo(() => countActiveUsers(users), [users]);
     
