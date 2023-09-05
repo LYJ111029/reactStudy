@@ -52,28 +52,26 @@ function App() {
             username,
             email,
         };
-        // 배열 추가 방법 2가지 (스프레트 연산자 또는 concat 사용)
-        setUsers([...users, user]);
-        // setUsers(users.concat(user));
 
+        setUsers(users => users.concat(user));
         setInputs({
             username: '',
             email: '',
         });
         nextId.current += 1;
-    }, [username, email, users]);
+    }, [username, email]);
 
-    const onRemove = id => {
-        setUsers(users.filter(user => user.id !== id));
-    }
+    const onRemove = useCallback(id => {
+        setUsers(users => users.filter(user => user.id !== id));
+    }, []);
 
-    const onToggle = id => {
-        setUsers(users.map(
+    const onToggle = useCallback(id => {
+        setUsers(users => users.map(
             user => user.id === id
                 ? { ...user, active: !user.active }
                 : user
         ))
-    }
+    }, []);
 
     // useMemo를 사용하면 필요할때만 함수를 호출 할 수 있다.
     const count = useMemo(() => countActiveUsers(users), [users]);
