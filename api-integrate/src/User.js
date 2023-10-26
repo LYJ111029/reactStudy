@@ -1,47 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useAsync } from 'react-async';
-import User from './User';
+import React, { useEffect } from 'react';
+import { useUsersState, useUsersDispatch, getUser } from './UsersContext';
 
-async function getUsers() {
-    const response = await axios.get(
-        'https://jsonplaceholder.typicode.com/users'
-    );
-    return response.data;
-}
+function User({ id }) {
+    const state = useUsersState();
+    const dispatch = useUsersDispatch();
+    useEffect(() => {
+        getUser(dispatch, id);
+    }, [dispatch, id]);
 
-function Users() {
-    const [userId, setUserId] = useState(null);
-    const {
-        data: users,
-        error,
-        isLoading,
-        run,
-    } = useAsync({
-        deferFn: getUsers,
-    });
+    const { data: user, loading, error } = state.user;
 
-    if (isLoading) return <div>로딩중..</div>;
+    if (loading) return <div>로딩중..</div>;
     if (error) return <div>에러가 발생했습니다</div>;
-    if (!users) return <button onClick={run}>불러오기</button>;
-
+    if (!user) return null;
     return (
-        <>
-            <ul>
-                {users.map((user) => (
-                    <li
-                        key={user.id}
-                        onClick={() => setUserId(user.id)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        {user.username} ({user.name})
-                    </li>
-                ))}
-            </ul>
-            <button onClick={run}>다시 불러오기</button>
-            {userId && <User id={userId} />}
-        </>
+        <div>
+            <h2>{user.username}</h2>
+            <p>
+                <b>Email:</b> {user.email}
+            </p>
+        </div>
     );
 }
 
-export default Users;
+export default User;
